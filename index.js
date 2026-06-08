@@ -1,30 +1,84 @@
 const express = require('express');
-const app = express();
+const session = require('express-session');
 const path = require('path');
+
+const app = express();
+
+const APP_USERNAME = process.env.APP_USERNAME || 'admin';
+const APP_PASSWORD = process.env.APP_PASSWORD || 'admin123';
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET || 'simple-receipt-app-secret',
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            httpOnly: true,
+            sameSite: 'lax',
+            secure: false,
+        },
+    })
+);
+
+function requireAuth(req, res, next) {
+    if (req.session && req.session.authenticated) {
+        return next();
+    }
+
+    return res.redirect('/');
+}
 
 app.get('/', (req, res) => {
-    res.render('login');
+    if (req.session && req.session.authenticated) {
+        return res.redirect('/dashboard');
+    }
+
+    return res.render('login', { error: null });
 });
 
 app.post('/login', (req, res) => {
-    // For simplicity, we're not implementing actual authentication
-    // In a real application, you would validate credentials here
-    res.redirect('/dashboard');
+    const { username, password } = req.body;
+
+    if (username === APP_USERNAME && password === APP_PASSWORD) {
+        req.session.authenticated = true;
+        req.session.username = username;
+        return res.redirect('/dashboard');
+    }
+
+    return res.status(401).render('login', {
+        error: 'Invalid username or password.',
+    });
 });
 
-app.get('/dashboard', (req, res) => {
-    res.render('dashboard');
+app.post('/logout', requireAuth, (req, res) => {
+    req.session.destroy(() => {
+        res.redirect('/');
+    });
 });
 
-app.post('/generate-receipt', (req, res) => {
-    const { paymentType, ...details } = req.body;
-    res.render('receipt', { paymentType, details });
+app.get('/dashboard', requireAuth, (req, res) => {
+    res.render('dashboard', { 
+        username: req.session.username,
+        formData: req.session.formData || null
+    });
+});
+
+app.post('/generate-receipt', requireAuth, (req, res) => {
+    const { paymentType, amount, ...details } = req.body;
+    
+    // Store form data in session so it persists when user returns from receipt
+    req.session.formData = { paymentType, amount, ...details };
+
+    res.render('receipt', {
+        paymentType,
+        amount: amount || '0.00',
+        details,
+    });
 });
 
 const PORT = process.env.PORT || 3000;

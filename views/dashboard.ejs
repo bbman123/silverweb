@@ -46,8 +46,8 @@
                         <input type="text" id="transactionType" name="transactionType" value="Transfer" class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1" for="transactionReference">Transaction Reference</label>
-                        <input type="text" id="transactionReference" name="transactionReference" required class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="b59943c...">
+                        <label class="block text-sm font-medium text-slate-700 mb-1" for="referenceNumber">Reference Number</label>
+                        <input type="text" id="referenceNumber" name="referenceNumber" required class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="b59943c...">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1" for="recipientName">Recipient Name</label>
@@ -63,7 +63,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1" for="transactionDateTime">Transaction Date & Time</label>
-                        <input type="text" id="transactionDateTime" name="transactionDateTime" class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="30 May 2026 at 7:44 pm">
+                        <input type="datetime-local" id="transactionDateTime" name="transactionDateTime" class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
                 </div>
 
@@ -74,9 +74,22 @@
         </div>
     </div>
 
+    <div id="form-data-holder" style="display: none;"><% if (typeof formData !== 'undefined' && formData) { %><%= JSON.stringify(formData) %><% } %></div>
+
     <script>
         const paymentTypeSelect = document.getElementById('paymentType');
         const formDetails = document.getElementById('form-details');
+        const formDataHolder = document.getElementById('form-data-holder');
+        let savedFormData = null;
+        
+        try {
+            const rawData = formDataHolder.textContent.trim();
+            if (rawData) {
+                savedFormData = JSON.parse(rawData);
+            }
+        } catch (e) {
+            console.log('No saved form data');
+        }
 
         const forms = {
             ach: `
@@ -111,4 +124,47 @@
                     <input type="text" id="accountNumber" name="accountNumber" class="w-full rounded-lg border border-slate-300 px-3 py-2">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-70
+                    <label class="block text-sm font-medium text-slate-700 mb-1" for="swiftCode">BIC / SWIFT</label>
+                    <input type="text" id="swiftCode" name="bic" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                </div>
+            `,
+            swift_euro: `
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1" for="paymentMethod">Payment Method</label>
+                    <input type="text" id="paymentMethod" name="paymentMethod" value="SEPA" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1" for="iban">IBAN</label>
+                    <input type="text" id="iban" name="iban" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1" for="bic">BIC / SWIFT</label>
+                    <input type="text" id="bic" name="bic" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1" for="country">Country</label>
+                    <input type="text" id="country" name="country" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                </div>
+            `,
+        };
+
+        function updateForm() {
+            formDetails.innerHTML = forms[paymentTypeSelect.value];
+            // Populate dynamic fields with saved data if available
+            if (savedFormData) {
+                setTimeout(() => {
+                    Object.keys(savedFormData).forEach(key => {
+                        const input = document.getElementById(key);
+                        if (input && savedFormData[key]) {
+                            input.value = savedFormData[key];
+                        }
+                    });
+                }, 0);
+            }
+        }
+
+        paymentTypeSelect.addEventListener('change', updateForm);
+        updateForm();
+    </script>
+</body>
+</html>

@@ -24,11 +24,31 @@
                     ['Transaction Type', details.transactionType || 'Transfer'],
                     ['Recipient Name', details.recipientName || '-'],
                     ['Sender Name', details.senderName || '-'],
-                    ['Transaction Reference', details.transactionReference || '-'],
+                    ['Reference Number', details.referenceNumber || '-'],
                     ['Payment Method', details.paymentMethod || '-'],
                     ['Bank Name', details.bankName],
                     ['Account Number', details.accountNumber],
                     ['Routing Number', details.routingNumber],
                     ['IBAN', details.iban],
                     ['BIC', details.bic],
-          
+                    ['Country', details.country],
+                    ['Transfer Note', details.transferNote],
+                    ['Transaction Date & Time', details.transactionDateTime || new Date().toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })],
+                ].filter((item) => item[1]); %>
+
+                <% rowEntries.forEach(function(item) { %>
+                    <div class="grid grid-cols-2 gap-4 px-4 md:px-6 py-4 border-b border-slate-200 last:border-b-0">
+                        <p class="text-slate-700 font-medium"><%= item[0] %></p>
+                        <p class="text-right text-slate-600 font-semibold break-all"><%= item[1] %></p>
+                    </div>
+                <% }) %>
+            </div>
+
+            <div class="mt-6 flex gap-3 justify-end print:hidden">
+                <a href="/dashboard" class="rounded-lg border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-50">Back</a>
+                <button onclick="window.print()" class="rounded-lg bg-slate-900 text-white px-4 py-2 hover:bg-slate-800">Print</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
