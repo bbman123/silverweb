@@ -81,7 +81,13 @@ app.post('/generate-receipt', requireAuth, (req, res) => {
     });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+// Export app for Netlify Functions (serverless)
+module.exports = app;
+
+// Only start the server when running locally (not in serverless environment)
+if (require.main === module) {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+}

@@ -9,14 +9,9 @@
 
 [[redirects]]
   from = "/*"
-  to = "/index.js"
+  to = "/.netlify/functions/server/:splat"
   status = 200
+  force = true
 
 [context.production]
   environment = { NODE_ENV = "production" }
-
-[context.deploy-preview]
-  environment = { NODE_ENV = "preview" }
-
-[context.branch-deploy]
-  environment = { NODE_ENV = "preview" }
