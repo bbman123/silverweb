@@ -70,6 +70,11 @@ app.get('/dashboard', requireAuth, (req, res) => {
 
 app.post('/generate-receipt', requireAuth, (req, res) => {
     const { paymentType, amount, ...details } = req.body;
+
+    const allowedStatuses = ['Settled', 'Pending'];
+    if (!details.status || !allowedStatuses.includes(details.status)) {
+        delete details.status;
+    }
     
     // Store form data in session so it persists when user returns from receipt
     req.session.formData = { paymentType, amount, ...details };
