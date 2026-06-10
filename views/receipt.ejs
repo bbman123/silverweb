@@ -12,10 +12,17 @@
         <div class="p-3 sm:p-6 md:p-8 text-xs sm:text-sm md:text-base">
             <p class="text-indigo-800 text-xs sm:text-sm font-semibold">Transaction Amount</p>
             <h1 class="mt-1 text-2xl sm:text-4xl font-bold text-slate-900 leading-tight">
+                <%
+                    const formattedAmount = new Intl.NumberFormat('en-US', {
+                        style: 'decimal',
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }).format(amount);
+                %>
                 <% if (paymentType === 'swift_euro') { %>
-                    EUR <%= amount %>
+                    EUR <%= formattedAmount %>
                 <% } else { %>
-                    USD <%= amount %>
+                    USD <%= formattedAmount %>
                 <% } %>
             </h1>
 
