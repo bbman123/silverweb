@@ -45,7 +45,8 @@
                 <% const rowEntries = [
                     ['Transaction Type', details.transactionType || 'Transfer'],
                     ['Recipient Name', details.recipientName || '-'],
-                    ['Sender Name', details.senderName || '-'],
+                    // Only include Sender Name if it exists in details
+                    ...(details.senderName ? [['Sender Name', details.senderName]] : []),
                     ['Reference Number', details.referenceNumber || '-'],
                     ['Payment Method', details.paymentMethod || '-'],
                     ['Bank Name', details.bankName],
