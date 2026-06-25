@@ -164,22 +164,62 @@
         };
 
         function updateForm() {
-            formDetails.innerHTML = forms[paymentTypeSelect.value];
-            // Populate dynamic fields with saved data if available
+            // Clear the form details
+            formDetails.innerHTML = '';
+            
+            // Get the selected payment type
+            const selectedType = paymentTypeSelect.value;
+            
+            // Update the form with the correct fields
+            if (forms[selectedType]) {
+                formDetails.innerHTML = forms[selectedType];
+            }
+            
+            // Apply saved form data to the newly created fields
             if (savedFormData) {
-                setTimeout(() => {
-                    Object.keys(savedFormData).forEach(key => {
-                        const input = document.getElementById(key);
-                        if (input && savedFormData[key]) {
-                            input.value = savedFormData[key];
-                        }
-                    });
-                }, 0);
+                // Get all input fields in the form details
+                const inputs = formDetails.querySelectorAll('input');
+                inputs.forEach(input => {
+                    if (savedFormData[input.id]) {
+                        input.value = savedFormData[input.id];
+                    }
+                });
             }
         }
 
-        paymentTypeSelect.addEventListener('change', updateForm);
-        updateForm();
+        // Event listener for dropdown changes
+        paymentTypeSelect.addEventListener('change', function() {
+            // Clear saved data to prevent conflicts when user manually changes
+            savedFormData = null;
+            updateForm();
+        });
+
+        // Initialize the form
+        function initializeForm() {
+            // First, set the dropdown value from saved data if available
+            if (savedFormData && savedFormData.paymentType) {
+                paymentTypeSelect.value = savedFormData.paymentType;
+            }
+            
+            // Update the form
+            updateForm();
+            
+            // Populate common fields from saved data
+            if (savedFormData) {
+                const commonFields = ['amount', 'transactionType', 'referenceNumber', 'recipientName', 'senderName', 'transferNote', 'transactionDateTime', 'status'];
+                commonFields.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (field && savedFormData[fieldId]) {
+                        field.value = savedFormData[fieldId];
+                    }
+                });
+            }
+            
+            // Clear saved data after populating to prevent interference
+            savedFormData = null;
+        }
+
+        initializeForm();
     </script>
 </body>
 </html>
