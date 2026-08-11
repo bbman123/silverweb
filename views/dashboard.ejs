@@ -32,6 +32,7 @@
                             <option value="ach">ACH (USD)</option>
                             <option value="swift_usd">SWIFT (USD)</option>
                             <option value="swift_euro">SWIFT (EUR)</option>
+                            <option value="faster_payment_gbp">Faster Payment (GBP)</option>
                         </select>
                     </div>
                     <div>
@@ -159,6 +160,24 @@
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1" for="country">Country</label>
                     <input type="text" id="country" name="country" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                </div>
+            `,
+            faster_payment_gbp: `
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1" for="paymentMethod">Payment Method</label>
+                    <input type="text" id="paymentMethod" name="paymentMethod" value="Faster Payment" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1" for="sortCode">Sort Code</label>
+                    <input type="text" id="sortCode" name="sortCode" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1" for="accountNumber">Account Number</label>
+                    <input type="text" id="accountNumber" name="accountNumber" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1" for="bankName">Bank Name</label>
+                    <input type="text" id="bankName" name="bankName" class="w-full rounded-lg border border-slate-300 px-3 py-2">
                 </div>
             `,
         };

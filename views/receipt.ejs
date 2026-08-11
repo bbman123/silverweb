@@ -21,6 +21,8 @@
                 %>
                 <% if (paymentType === 'swift_euro') { %>
                     EUR <%= formattedAmount %>
+                <% } else if (paymentType === 'faster_payment_gbp') { %>
+                    GBP <%= formattedAmount %>
                 <% } else { %>
                     USD <%= formattedAmount %>
                 <% } %>
@@ -52,6 +54,7 @@
                     ['Bank Name', details.bankName],
                     ['Account Number', details.accountNumber],
                     ['Routing Number', details.routingNumber],
+                    ['Sort Code', details.sortCode],
                     ['IBAN', details.iban],
                     ['BIC / SWIFT', details.bic],
                     ['Country', details.country],
