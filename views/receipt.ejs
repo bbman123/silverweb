@@ -30,17 +30,21 @@
 
             <% 
                 const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-                function formatDateTime(dt) {
+                function formatDateTime(dt, includeTime) {
                     const d = dt ? new Date(dt) : new Date();
                     const day = d.getDate();
                     const month = months[d.getMonth()];
                     const year = d.getFullYear();
+                    if (!includeTime) {
+                        return `${day} ${month} ${year}`;
+                    }
                     let hours = d.getHours();
                     const minutes = String(d.getMinutes()).padStart(2, '0');
                     const ampm = hours >= 12 ? 'pm' : 'am';
                     hours = hours % 12 || 12;
                     return `${day} ${month} ${year} at ${hours}:${minutes} ${ampm}`;
                 }
+                const includeTime = !!details.showTime;
             %>
 
             <div class="mt-5 sm:mt-8 border border-slate-200 rounded-2xl overflow-hidden">
@@ -59,7 +63,7 @@
                     ['BIC / SWIFT', details.bic],
                     ['Country', details.country],
                     ['Transfer Note', details.transferNote],
-                    ['Transaction Date & Time', formatDateTime(details.transactionDateTime)],
+                    [includeTime ? 'Transaction Date & Time' : 'Transaction Date', formatDateTime(details.transactionDateTime, includeTime)],
                 ].filter((item) => item[1]); %>
 
                 <% rowEntries.forEach(function(item) { %>
