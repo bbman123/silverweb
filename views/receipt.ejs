@@ -53,7 +53,7 @@
                     ['Recipient Name', details.recipientName || '-'],
                     // Only include Sender Name if it exists in details
                     ...(details.senderName ? [['Sender Name', details.senderName]] : []),
-                    ['Reference Number', details.referenceNumber || '-'],
+                    ...(details.referenceNumber && details.referenceNumber.trim() ? [['Reference Number', details.referenceNumber.trim()]] : []),
                     ['Payment Method', details.paymentMethod || '-'],
                     ['Bank Name', details.bankName],
                     ['Account Number', details.accountNumber],
