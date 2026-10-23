@@ -47,7 +47,59 @@
                 const includeTime = !!details.showTime;
             %>
 
+            <%
+                const isSwift = paymentType === 'swift_usd' || paymentType === 'swift_euro';
+                const swiftCurrency = paymentType === 'swift_euro' ? 'EUR' : 'USD';
+                function swiftDate(dt) {
+                    const d = dt ? new Date(dt) : new Date();
+                    const yy = String(d.getFullYear()).slice(-2);
+                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    return `${yy}${mm}${dd}`;
+                }
+                const swiftAmount = new Intl.NumberFormat('en-US', {
+                    style: 'decimal',
+                    useGrouping: false,
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }).format(amount).replace('.', ',');
+                const accountLine50 = details.senderAccountNumber && details.senderAccountNumber.trim() ? '/' + details.senderAccountNumber.trim() : '';
+                const accountLine59 = (details.iban || details.accountNumber) ? '/' + (details.iban || details.accountNumber).trim() : '';
+                const swiftRows = [
+                    [':20:', "Sender's Reference", details.referenceNumber && details.referenceNumber.trim()],
+                    [':23B:', 'Bank Operation Code', 'CRED'],
+                    [':32A:', 'Value Date/Currency/Amount', `${swiftDate(details.transactionDateTime)}${swiftCurrency}${swiftAmount}`],
+                    [':50:', 'Ordering Customer', [accountLine50, details.senderName].filter(Boolean).join('\n')],
+                    [':57:', 'Account With Institution', [details.bankName, details.bic].filter(Boolean).join('\n')],
+                    [':59:', 'Beneficiary Customer', [accountLine59, details.recipientName].filter(Boolean).join('\n')],
+                    [':70:', 'Remittance Information', details.transferNote && details.transferNote.trim()],
+                ].filter(function(row) { return row[2]; });
+                const swiftMetaRows = [
+                    ['Transaction Type', details.transactionType || 'Transfer'],
+                    ['Payment Method', details.paymentMethod || 'SWIFT'],
+                    ['Country', details.country],
+                ].filter(function(row) { return row[1]; });
+            %>
+
             <div class="mt-5 sm:mt-8 border border-slate-200 rounded-2xl overflow-hidden">
+                <% if (isSwift) { %>
+                    <div class="px-3 sm:px-4 md:px-6 py-3 bg-slate-900 font-mono text-[11px] sm:text-sm text-white tracking-widest uppercase">
+                        SWIFT MT103 &mdash; Customer Transfer
+                    </div>
+                    <% swiftRows.forEach(function(row) { %>
+                        <div class="flex gap-2 sm:gap-4 px-3 sm:px-4 md:px-6 py-2.5 sm:py-3 border-b border-slate-200 font-mono text-[11px] sm:text-sm">
+                            <span class="w-10 sm:w-14 shrink-0 font-bold text-indigo-800"><%= row[0] %></span>
+                            <span class="hidden sm:block w-48 shrink-0 text-slate-500 uppercase"><%= row[1] %></span>
+                            <span class="flex-1 text-slate-800 font-semibold break-all whitespace-pre-line"><%= row[2] %></span>
+                        </div>
+                    <% }) %>
+                    <% swiftMetaRows.forEach(function(row) { %>
+                        <div class="grid grid-cols-2 gap-2 sm:gap-4 px-3 sm:px-4 md:px-6 py-2.5 sm:py-3 border-b border-slate-200">
+                            <p class="text-slate-700 font-medium"><%= row[0] %></p>
+                            <p class="text-right text-slate-600 font-semibold break-all"><%= row[1] %></p>
+                        </div>
+                    <% }) %>
+                <% } else { %>
                 <% const rowEntries = [
                     ['Transaction Type', details.transactionType || 'Transfer'],
                     ['Recipient Name', details.recipientName || '-'],
@@ -72,6 +124,7 @@
                         <p class="text-right text-slate-600 font-semibold break-all"><%= item[1] %></p>
                     </div>
                 <% }) %>
+                <% } %>
                 <% if (details.status) { %>
                     <div class="grid grid-cols-2 gap-2 sm:gap-4 px-3 sm:px-4 md:px-6 py-2.5 sm:py-4">
                         <p class="text-slate-700 font-medium">Status</p>
