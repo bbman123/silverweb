@@ -165,6 +165,15 @@
                     <label class="block text-sm font-medium text-slate-700 mb-1" for="swiftCode">BIC / SWIFT</label>
                     <input type="text" id="swiftCode" name="bic" class="w-full rounded-lg border border-slate-300 px-3 py-2">
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1" for="charges">Charges</label>
+                    <select id="charges" name="charges" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                        <option value="">Select charges (optional)</option>
+                        <option value="SHA (Shared)">SHA (Shared)</option>
+                        <option value="OUR (Sender pays)">OUR (Sender pays)</option>
+                        <option value="BEN (Beneficiary pays)">BEN (Beneficiary pays)</option>
+                    </select>
+                </div>
             `,
             swift_euro: `
                 <div>
@@ -186,6 +195,15 @@
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1" for="country">Country</label>
                     <input type="text" id="country" name="country" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1" for="charges">Charges</label>
+                    <select id="charges" name="charges" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                        <option value="">Select charges (optional)</option>
+                        <option value="SHA (Shared)">SHA (Shared)</option>
+                        <option value="OUR (Sender pays)">OUR (Sender pays)</option>
+                        <option value="BEN (Beneficiary pays)">BEN (Beneficiary pays)</option>
+                    </select>
                 </div>
             `,
             faster_payment_gbp: `
@@ -223,7 +241,7 @@
             // Apply saved form data to the newly created fields
             if (savedFormData) {
                 // Get all input fields in the form details
-                const inputs = formDetails.querySelectorAll('input');
+                const inputs = formDetails.querySelectorAll('input, select');
                 inputs.forEach(input => {
                     if (savedFormData[input.id]) {
                         input.value = savedFormData[input.id];
